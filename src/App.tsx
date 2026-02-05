@@ -4,6 +4,7 @@ import { App as CapApp } from '@capacitor/app';
 import { registerPlugin } from '@capacitor/core';
 
 const OpenFolder = registerPlugin<any>('OpenFolder');
+const Codemirror = registerPlugin<any>('Codemirror');
 const DIR = 'Notes';
 
 interface Note { id: string; title: string; content: string; time: number; isNew?: boolean; inTrash?: boolean; }
@@ -179,11 +180,30 @@ const App: React.FC = () => {
         timeouts.current.save = window.setTimeout(() => saveToDisk(curId, e.target.value), 300);
     };
 
-    const createNewNote = () => {
+    const createNewNote = async () => {
         const prefix = (curGroup && curGroup !== '') ? `${curGroup}/` : '';
         const id = `${prefix}temp_${Date.now()}.txt`;
         const newNote: Note = { id, title: t.newNote, content: '', time: Date.now(), isNew: true };
-        setNotes(p => [newNote, ...p]); setCurId(id); setView('editor'); setTimeout(() => textareaRef.current?.focus(), 300);
+
+        try {
+            // Write the empty temp file first so the plugin can open it
+            await Filesystem.writeFile({
+                path: `${DIR}/${id}`,
+                data: '',
+                directory: Directory.Documents,
+                encoding: Encoding.UTF8
+            });
+
+            const basePath = docPath.startsWith('file://') ? docPath.substring(7) : docPath;
+            await Codemirror.start({
+                path: `${basePath}/${id}`,
+                title: t.newNote,
+                theme: theme
+            });
+            reloadNotes();
+        } catch (e) {
+            alert('Error creating note: ' + e);
+        }
     };
 
     const createGroup = async () => {
@@ -470,9 +490,25 @@ const App: React.FC = () => {
                             const isSel = selectedIds.includes(n.id);
                             return (
                                 <div key={n.id} className={`note-card ${isSel ? 'selected' : ''}`}
-                                    onClick={() => {
+                                    onClick={async () => {
                                         if (isSelectMode) setSelectedIds(p => isSel ? p.filter(x => x !== n.id) : [...p, n.id]);
-                                        else { setCurId(n.id); setView('editor'); }
+                                        else {
+                                            // setCurId(n.id); setView('editor'); 
+                                            try {
+                                                // Convert URI to absolute path (strip file://)
+                                                // docPath is the base Notes folder
+                                                const basePath = docPath.startsWith('file://') ? docPath.substring(7) : docPath;
+                                                const fullPath = `${basePath}/${n.id}`;
+                                                await Codemirror.start({
+                                                    path: fullPath,
+                                                    title: n.title,
+                                                    theme: theme
+                                                });
+                                                reloadNotes(); // Reload after editor closed
+                                            } catch (e) {
+                                                alert('Codemirror error: ' + e);
+                                            }
+                                        }
                                     }}
                                     onTouchStart={() => {
                                         if (!isSelectMode) timeouts.current.lp = window.setTimeout(() => { setIsSelectMode(true); setSelectedIds([n.id]); }, 600);
