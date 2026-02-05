@@ -10,6 +10,3 @@ project(':capacitor-filesystem').projectDir = new File('../node_modules/@capacit
 
 include ':capacitor-codemirror'
 project(':capacitor-codemirror').projectDir = new File('../capacitor-codemirror/android')
-
-include ':capacitor-sora-editor'
-project(':capacitor-sora-editor').projectDir = new File('../node_modules/capacitor-sora-editor/android')

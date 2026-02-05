@@ -22,7 +22,6 @@
     "@capacitor/filesystem": "^8.0.0",
     "@uiw/react-codemirror": "^4.25.4",
     "capacitor-codemirror": "file:capacitor-codemirror",
-    "capacitor-sora-editor": "^1.0.10",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },

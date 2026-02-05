@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sora-Style CodeMirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #9b6dff;
+            --bg: #0d1117;
+            --surface: #161b22;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --border: #30363d;
+            --accent: #21262d;
+            --header-height: 56px;
+            --status-bar-height: 24px;
+            --symbol-bar-height: 48px;
+        }
+
+        [data-theme='light'] {
+            --primary: #6200ee;
+            --bg: #ffffff;
+            --surface: #f6f8fa;
+            --text: #24292f;
+            --text-dim: #57606a;
+            --border: #d0d7de;
+            --accent: #eff2f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body,
+        html {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Outfit', system-ui, sans-serif;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            overscroll-behavior: none;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        header {
+            height: var(--header-height);
+            padding: env(safe-area-inset-top) 8px 0;
+            display: flex;
+            align-items: center;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-icon:active {
+            opacity: 0.5;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .symbol-bar {
+            height: var(--symbol-bar-height);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 4px;
+        }
+
+        .symbol-btn {
+            min-width: 40px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .symbol-btn:active {
+            background: var(--accent);
+            border-radius: 8px;
+        }
+
+        .status-bar {
+            height: var(--status-bar-height);
+            background: var(--bg);
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #editor {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Native Scrollbar Logic */
+        .cm-scroller {
+            font-family: 'JetBrains Mono', monospace !important;
+            overflow: auto !important;
+            height: 100% !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            padding-bottom: 200px !important;
+            outline: none;
+        }
+
+        /* Virtual Scrollbar */
+        .virtual-scrollbar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            /* Large container for safety */
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .virtual-scrollbar.visible {
+            opacity: 1;
+        }
+
+        .scrollbar-thumb {
+            position: absolute;
+            right: 0;
+            width: 30px;
+            /* Massive hit area */
+            background: transparent;
+            /* Transparent clickable area */
+            min-height: 40px;
+            pointer-events: auto;
+            /* Catch events */
+            cursor: pointer;
+            touch-action: none;
+            /* Prevent native scrolling when dragging thumb */
+        }
+
+        /* The visual scrollbar pill */
+        .scrollbar-thumb::after {
+            content: '';
+            display: block;
+            position: absolute;
+            right: 4px;
+            /* Spacing from edge */
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            /* Visual width */
+            background-color: rgba(155, 155, 155, 0.6);
+            border-radius: 4px;
+        }
+
+        /* Active state for better feedback */
+        /* Active state for better feedback */
+        .scrollbar-thumb:active::after {
+            background-color: rgba(155, 155, 155, 0.9);
+            width: 8px;
+            /* Expands when touched */
+            right: 3px;
+        }
+
+        /* --- Horizontal Scrollbar --- */
+        .virtual-scrollbar-h {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            /* Touch target */
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .virtual-scrollbar-h.visible {
+            opacity: 1;
+        }
+
+        .scrollbar-thumb-h {
+            position: absolute;
+            bottom: 0;
+            /* Align to bottom of container */
+            height: 30px;
+            /* Touch target */
+            background: transparent;
+            min-width: 40px;
+            pointer-events: auto;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .scrollbar-thumb-h::after {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background-color: rgba(155, 155, 155, 0.6);
+            border-radius: 4px;
+        }
+
+        .scrollbar-thumb-h:active::after {
+            background-color: rgba(155, 155, 155, 0.9);
+            height: 8px;
+            bottom: 3px;
+        }
+
+        /* Hide native scrollbar but keep functionality */
+        .cm-scroller::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Menus */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+        }
+
+        .overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-card {
+            position: absolute;
+            top: 60px;
+            right: 8px;
+            width: 200px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform-origin: top right;
+            transform: scale(0.9) translateY(-10px);
+            transition: all 0.2s;
+        }
+
+        .overlay.visible .menu-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .menu-item:active {
+            background: var(--accent);
+        }
+
+        /* Settings Page */
+        .settings-page {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1);
+        }
+
+        .settings-page.active {
+            transform: translateX(0);
+        }
+
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-text .setting-title {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .setting-text .setting-desc {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        input[type="range"] {
+            flex: 1;
+            margin: 0 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 44px;
+            height: 24px;
+            appearance: none;
+            background: var(--border);
+            border-radius: 12px;
+            position: relative;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input[type="checkbox"]:checked {
+            background: var(--primary);
+        }
+
+        input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        input[type="checkbox"]:checked::after {
+            transform: translateX(20px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <div class="header-actions">
+                <button class="btn-icon" id="btn-toc-open"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg></button>
+                <div class="spacer"></div>
+                <button class="btn-icon" id="btn-save"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                        <path d="M17 21v-8H7v8" />
+                        <path d="M7 3v5h8" />
+                    </svg></button>
+                <button class="btn-icon" id="btn-undo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M9 13l-4-4 4-4M5 9h11a4 4 0 010 8h-1" />
+                    </svg></button>
+                <button class="btn-icon" id="btn-redo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M15 13l4-4-4-4M19 9H8a4 4 0 000 8h1" />
+                    </svg></button>
+                <button class="btn-icon" id="btn-menu-open"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0 M12 5m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0 M12 19m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0" />
+                    </svg></button>
+            </div>
+        </header>
+
+        <div class="editor-wrapper">
+            <div id="editor"></div>
+            <div class="virtual-scrollbar" id="virtual-scrollbar">
+                <div class="scrollbar-thumb" id="scrollbar-thumb"></div>
+            </div>
+            <div class="virtual-scrollbar-h" id="virtual-scrollbar-h">
+                <div class="scrollbar-thumb-h" id="scrollbar-thumb-h"></div>
+            </div>
+        </div>
+
+        <div class="symbol-bar" id="symbol-bar"></div>
+
+        <div class="status-bar">
+            <span id="st-filename">file.txt</span>
+            <span id="st-info">Line 1, Col 1</span>
+        </div>
+
+        <!-- Menus -->
+        <div class="overlay" id="global-overlay">
+            <div class="menu-card hidden" id="more-menu">
+                <div class="menu-item" id="mi-back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>返回</span>
+                </div>
+                <div class="menu-item" id="mi-settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33a1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0a2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2a2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83a2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2a2 2 0 012 2v.09a1.65 1.65 0 001 1.51a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0a2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2a2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                    </svg>
+                    <span>设置</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="settings-page" id="settings-page">
+            <header>
+                <div class="header-actions">
+                    <button class="btn-icon" id="btn-settings-back"><svg width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg></button>
+                    <span style="font-weight: 600; font-size: 1.1rem; margin-left: 8px;">编辑器设置</span>
+                </div>
+            </header>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <div class="setting-text">
+                        <div class="setting-title">字体大小</div>
+                        <div class="setting-desc">调整编辑器文字的大小</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <input type="range" id="font-slider" min="12" max="32" value="16">
+                        <span id="font-val" style="min-width: 32px; text-align: right">16px</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-text">
+                        <div class="setting-title">自动换行</div>
+                        <div class="setting-desc">超出屏幕宽度时自动折行</div>
+                    </div>
+                    <input type="checkbox" id="wrap-check" checked>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-text">
+                        <div class="setting-title">代码折叠</div>
+                        <div class="setting-desc">显示行号旁的折叠箭头</div>
+                    </div>
+                    <input type="checkbox" id="fold-check" checked>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-text">
+                        <div class="setting-title">底部自动留白</div>
+                        <div class="setting-desc">允许将文档最后一行推至屏幕上方</div>
+                    </div>
+                    <input type="checkbox" id="autopush-check">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script type="module" src="./main.ts"></script>
+</body>
+
+</html>
