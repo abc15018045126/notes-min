@@ -267,6 +267,20 @@
         }
 
         /* Hide native scrollbar but keep functionality */
+        .cm-scroller {
+            overflow: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-x pan-y !important;
+        }
+
+        .cm-scroller[data-word-wrap="true"] {
+            overflow-x: hidden !important;
+        }
+
+        .cm-scroller[data-word-wrap="false"] {
+            overflow-x: auto !important;
+        }
+
         .cm-scroller::-webkit-scrollbar {
             display: none;
         }
@@ -337,6 +351,104 @@
             transform: translateX(0);
         }
 
+        /* TOC Page (Left Drawer) */
+        .toc-page {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            background: #1e1e1e;
+            /* Hardcoded dark bg for stability */
+            z-index: 1000;
+            /* Super high z-index */
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1);
+            border-right: 1px solid #333;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 10px 0 50px rgba(0, 0, 0, 0.8);
+            pointer-events: auto !important;
+            /* Force click enabled */
+        }
+
+        .toc-page.active {
+            transform: translateX(0);
+        }
+
+        .toc-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .toc-content::-webkit-scrollbar {
+            width: 8px;
+            /* Thicker for better touch dragging */
+        }
+
+        .toc-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .toc-tabs {
+            display: flex;
+            padding: 8px;
+            gap: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .toc-tab {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .toc-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .toc-item {
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Explicit white border */
+            border-radius: 8px;
+            margin: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .toc-item.current {
+            border: 2px solid #3b82f6;
+            /* Blue border for current */
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .toc-item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .toc-item-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
         .settings-content {
             flex: 1;
             overflow-y: auto;
@@ -397,6 +509,20 @@
             transform: translateX(20px);
         }
 
+        .json-textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            resize: none;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -451,70 +577,167 @@
             <span id="st-info">Line 1, Col 1</span>
         </div>
 
-        <!-- Menus -->
-        <div class="overlay" id="global-overlay">
-            <div class="menu-card hidden" id="more-menu">
-                <div class="menu-item" id="mi-back">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                    <span>返回</span>
+        <!-- TOC Page (Moved inside .app) -->
+        <div class="toc-page" id="toc-page">
+            <header>
+                <div class="header-actions">
+                    <span style="font-weight: 600; font-size: 1.1rem; margin-left: 12px;">逻辑目录</span>
+                    <div class="spacer"></div>
+                    <button class="btn-icon" id="btn-toc-close"><svg width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg></button>
                 </div>
-                <div class="menu-item" id="mi-settings">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33a1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0a2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2a2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83a2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2a2 2 0 012 2v.09a1.65 1.65 0 001 1.51a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0a2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2a2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
-                    </svg>
-                    <span>设置</span>
-                </div>
+            </header>
+            <div class="toc-tabs">
+                <div class="toc-tab active" id="tab-toc-row">按行数</div>
+                <div class="toc-tab" id="tab-toc-char">按字符</div>
+            </div>
+            <div class="toc-content" id="toc-content">
+                <!-- Items injected by JS -->
             </div>
         </div>
 
-        <!-- Settings Page -->
-        <div class="settings-page" id="settings-page">
-            <header>
-                <div class="header-actions">
-                    <button class="btn-icon" id="btn-settings-back"><svg width="24" height="24" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                        </svg></button>
-                    <span style="font-weight: 600; font-size: 1.1rem; margin-left: 8px;">编辑器设置</span>
-                </div>
-            </header>
-            <div class="settings-content">
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <div class="setting-title">字体大小</div>
-                        <div class="setting-desc">调整编辑器文字的大小</div>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <input type="range" id="font-slider" min="12" max="32" value="16">
-                        <span id="font-val" style="min-width: 32px; text-align: right">16px</span>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <div class="setting-title">自动换行</div>
-                        <div class="setting-desc">超出屏幕宽度时自动折行</div>
-                    </div>
-                    <input type="checkbox" id="wrap-check" checked>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <div class="setting-title">代码折叠</div>
-                        <div class="setting-desc">显示行号旁的折叠箭头</div>
-                    </div>
-                    <input type="checkbox" id="fold-check" checked>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <div class="setting-title">底部自动留白</div>
-                        <div class="setting-desc">允许将文档最后一行推至屏幕上方</div>
-                    </div>
-                    <input type="checkbox" id="autopush-check">
-                </div>
+    </div>
+
+    <!-- Menus -->
+    <div class="overlay" id="global-overlay">
+        <div class="menu-card hidden" id="more-menu">
+            <div class="menu-item" id="mi-back">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span>返回</span>
+            </div>
+            <div class="menu-item" id="mi-search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>搜索</span>
+            </div>
+            <div class="menu-item" id="mi-settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33a1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0a2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2a2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83a2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2a2 2 0 012 2v.09a1.65 1.65 0 001 1.51a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0a2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2a2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+                <span>设置</span>
             </div>
         </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="settings-page" id="settings-page">
+        <header>
+            <div class="header-actions">
+                <button class="btn-icon" id="btn-settings-back"><svg width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg></button>
+                <span style="font-weight: 600; font-size: 1.1rem; margin-left: 8px;">编辑器设置</span>
+            </div>
+        </header>
+        <div class="settings-content">
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">字体大小</div>
+                    <div class="setting-desc">调整编辑器文字的大小</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="font-slider" min="8" max="32" value="16">
+                    <span id="font-val" style="min-width: 32px; text-align: right">16px</span>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">自动换行</div>
+                    <div class="setting-desc">超出屏幕宽度时自动折行</div>
+                </div>
+                <input type="checkbox" id="wrap-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">显示行号</div>
+                    <div class="setting-desc">在编辑器左侧显示行数标记</div>
+                </div>
+                <input type="checkbox" id="line-numbers-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">高亮当前行</div>
+                    <div class="setting-desc">对光标所在行进行背景高亮</div>
+                </div>
+                <input type="checkbox" id="highlight-line-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">显示状态栏</div>
+                    <div class="setting-desc">底部信息栏（行号位置、字数等）</div>
+                </div>
+                <input type="checkbox" id="status-bar-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">符号快捷键</div>
+                    <div class="setting-desc">输入区上方的符号扩展栏</div>
+                </div>
+                <input type="checkbox" id="symbol-bar-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">代码折叠</div>
+                    <div class="setting-desc">显示行号旁的折叠箭头</div>
+                </div>
+                <input type="checkbox" id="fold-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">行间距倍率</div>
+                    <div class="setting-desc">设置文本行的垂直间距</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="line-height-slider" min="0.8" max="3.0" step="0.1" value="1.5">
+                    <span id="line-height-val" style="min-width: 32px; text-align: right">1.5</span>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">自动换行倍率</div>
+                    <div class="setting-desc">逻辑行内折行的间距</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="wrap-line-height-slider" min="0.8" max="3.0" step="0.1" value="1.2">
+                    <span id="wrap-line-height-val" style="min-width: 32px; text-align: right">1.2</span>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">左右页边距</div>
+                    <div class="setting-desc">编辑器两侧的留白</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="margin-slider" min="0" max="100" step="4" value="16">
+                    <span id="margin-val" style="min-width: 32px; text-align: right">16px</span>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">JSON 高级配置</div>
+                    <div class="setting-desc">直接编辑配置 JSON</div>
+                </div>
+                <textarea class="json-textarea" id="json-settings"></textarea>
+            </div>
+        </div>
+    </div>
 
     </div>
     <script type="module" src="./main.ts"></script>
