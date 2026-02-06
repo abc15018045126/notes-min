@@ -11,6 +11,7 @@ import { foldGutter } from "@codemirror/language"
 import { SettingsManager } from "./settings"
 import { ZoomManager } from "./zoom"
 import { ScrollbarManager } from "./scrollbar"
+import { ScrollSyncManager } from "./scroll-sync"
 
 // --- Configuration Compartments ---
 const fontSizeConf = new Compartment()
@@ -21,7 +22,8 @@ const lineNumbersConf = new Compartment()
 const highlightLineConf = new Compartment()
 
 // --- UI Elements ---
-// (References moved to managers)
+const vScrollbar = document.getElementById("virtual-scrollbar")!
+const hScrollbar = document.getElementById("virtual-scrollbar-h")!
 
 // --- Basic Setup ---
 const basicSetup = [
@@ -81,7 +83,6 @@ const editor = new EditorView({
                 }
             }),
 
-
             // Update Listener
             EditorView.updateListener.of((update) => {
                 if (update.docChanged) {
@@ -91,8 +92,8 @@ const editor = new EditorView({
                 if (update.selectionSet) {
                     updateStats()
                 }
-                // Scrollbar Logic - Handled by ScrollbarManager
-                if (update.geometryChanged) {
+                // Scrollbar Logic - Only update on geometry changes. 
+                if (update.geometryChanged && scrollbar) {
                     scrollbar.update()
                 }
             })
@@ -112,13 +113,10 @@ const settings = new SettingsManager(
     highlightLineConf
 )
 settings.loadSettings()
-const scrollbar = new ScrollbarManager(editor, settings)
 new ZoomManager(editor, settings)
-
-// --- Keyboard Resize Handling ---
-// Removed aggressive scrollIntoView on resize. 
-// CodeMirror 6 has better native handling for viewport changes.
-
+new ZoomManager(editor, settings)
+const scrollbar = new ScrollbarManager(editor, settings)
+new ScrollSyncManager(editor)
 
 // --- Bridge Implementation ---
 window.editorBridge = {
@@ -182,8 +180,6 @@ symbols.forEach(s => {
     }
     bar.appendChild(btn)
 })
-
-
 
 // --- TOC Logic & Navigation ---
 const tocPage = document.getElementById("toc-page")!
