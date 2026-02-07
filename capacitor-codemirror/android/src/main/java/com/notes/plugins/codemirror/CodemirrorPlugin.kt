@@ -41,6 +41,10 @@ class CodemirrorPlugin : Plugin() {
         intent.putExtra("showLineNumbers", showLineNumbers)
         intent.putExtra("autoSave", autoSave)
         intent.putExtra("language", language)
+        val readOnly = call.getBoolean("readOnly", false)
+        intent.putExtra("readOnly", readOnly)
+
+
 
         // We start the activity. Note: if you want to get result back, use startActivityForResult
         activity.startActivity(intent)

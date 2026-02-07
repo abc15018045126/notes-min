@@ -23,6 +23,8 @@ const lineNumbersConf = new Compartment()
 const highlightLineConf = new Compartment()
 const customThemeConf = new Compartment()
 const languageConf = new Compartment()
+const readOnlyConf = new Compartment()
+
 
 // --- UI Elements ---
 const vScrollbar = document.getElementById("virtual-scrollbar")!
@@ -64,6 +66,9 @@ const editor = new EditorView({
             basicSetup,
             // Dynamic Configurations
             languageConf.of([]), // Default to Plain Text
+            readOnlyConf.of([EditorState.readOnly.of(false), EditorView.editable.of(true)]),
+
+
             themeConf.of(oneDark),
             customThemeConf.of([]),
             fontSizeConf.of(EditorView.theme({
@@ -143,11 +148,14 @@ document.addEventListener('selectionchange', () => {
 })
 
 // [Android Fix] Ensure focus on first touch to stabilize long-press selection
+// [Android Fix] Ensure focus on first touch to stabilize long-press selection
 editor.contentDOM.addEventListener('touchstart', (e) => {
+    if (editor.state.readOnly) return
     if (e.touches.length === 1 && !editor.hasFocus) {
         editor.focus()
     }
 }, { passive: true })
+
 
 // --- Initialize Managers ---
 const settings = new SettingsManager(
@@ -213,7 +221,12 @@ window.editorBridge = {
             extensions: [
                 basicSetup,
                 // Re-apply dynamic configurations
+                readOnlyConf.of(options.readOnly ?
+                    [EditorState.readOnly.of(true), EditorView.editable.of(false)] :
+                    [EditorState.readOnly.of(false), EditorView.editable.of(true)]),
                 languageConf.of(settings.languageMode === "Markdown" ?
+
+
                     [markdown({ codeLanguages: languages })] : []),
                 themeConf.of(settings.isDarkTheme ? oneDark : []),
                 customThemeConf.of(settings.getCustomTheme()),
@@ -423,7 +436,14 @@ const moreMenu = document.getElementById("more-menu")!
 const settingsPage = document.getElementById("settings-page")!
 function showOverlay(menu: boolean) {
     overlay.classList.add("visible")
-    if (menu) moreMenu.classList.remove("hidden")
+    overlay.classList.add("visible")
+    if (menu) {
+        moreMenu.classList.remove("hidden")
+        // Sync Read Only State
+        const menuCheck = document.getElementById("menu-readonly-check") as HTMLInputElement
+        if (menuCheck) menuCheck.checked = editor.state.readOnly
+    }
+
 }
 function hideOverlay() {
     overlay.classList.remove("visible")
@@ -472,6 +492,11 @@ document.getElementById("mi-info")!.onclick = () => {
     document.getElementById("info-lines")!.textContent = editor.state.doc.lines.toString()
     document.getElementById("info-chars")!.textContent = editor.state.doc.length.toString()
 
+    // Set Read Only Checkbox State
+    const readOnlyCheck = document.getElementById("info-readonly-check") as HTMLInputElement
+    readOnlyCheck.checked = editor.state.readOnly
+
+
     // Show Modal
     showOverlay(false) // Show overlay but no menu
     infoModal.classList.remove("hidden")
@@ -481,6 +506,41 @@ btnInfoClose.onclick = () => {
     hideOverlay()
     infoModal.classList.add("hidden")
 }
+
+
+// Sync Read Only State logic
+function toggleReadOnly(isReadOnly: boolean) {
+    editor.dispatch({
+        effects: readOnlyConf.reconfigure(isReadOnly ?
+            [EditorState.readOnly.of(true), EditorView.editable.of(false)] :
+            [EditorState.readOnly.of(false), EditorView.editable.of(true)])
+    })
+
+    // Sync UI
+    const menuCheck = document.getElementById("menu-readonly-check") as HTMLInputElement
+    const infoCheck = document.getElementById("info-readonly-check") as HTMLInputElement
+    if (menuCheck) menuCheck.checked = isReadOnly
+    if (infoCheck) infoCheck.checked = isReadOnly
+}
+
+document.getElementById("mi-readonly")!.onclick = (e) => {
+    // Prevent menu from closing immediately if we want to see the toggle (optional, but current UX closes menu on action)
+    // Actually, usually headers/toggles don't close menu. But here others do.
+    // Let's toggle and keep menu open? Or close?
+    // "mi-settings" closes and opens page. "mi-rename" closes and prompts.
+    // Let's keep menu open for a toggle.
+    e.stopPropagation()
+
+    const current = editor.state.readOnly
+    toggleReadOnly(!current)
+}
+
+document.getElementById("info-readonly-check")!.onchange = (e) => {
+    const checked = (e.target as HTMLInputElement).checked
+    toggleReadOnly(checked)
+}
+
+
 
 document.getElementById("mi-revert")!.onclick = () => {
     hideOverlay()
