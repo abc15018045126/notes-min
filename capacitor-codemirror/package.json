@@ -1,6 +1,6 @@
 {
   "name": "capacitor-codemirror",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CodeMirror 6 editor for Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

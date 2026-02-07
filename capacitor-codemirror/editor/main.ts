@@ -385,9 +385,10 @@ function generateTOC() {
         }
 
         item.innerHTML = `
-<div class="toc-item-title" style="pointer-events: none;">${chap.label}</div>
-<div class="toc-item-meta" style="pointer-events: none;">${tocType === 'row' ? '第 ' + chap.line + ' 行' : '内容偏移: ' + chap.pos}</div>
+<div class="toc-item-title" style="pointer-events: none;">第 ${index + 1} 章</div>
+<div class="toc-item-meta" style="pointer-events: none;">${chap.label}</div>
 `
+
 
         item.onclick = (e) => {
             e.preventDefault()
