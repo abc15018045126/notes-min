@@ -182,7 +182,15 @@ window.editorBridge = {
     },
     close: () => {
         if (window.Android) {
-            window.Android.save(editor.state.doc.toString())
+            // Check if auto-save is disabled and content has changed
+            if (!settings.isAutoSave && editor.state.doc.toString() !== initialContent) {
+                if (confirm("文件尚未保存，是否保存后退出？")) {
+                    window.Android.save(editor.state.doc.toString())
+                }
+            } else if (settings.isAutoSave) {
+                // Auto-save is enabled, save before closing
+                window.Android.save(editor.state.doc.toString())
+            }
             window.Android.close()
         }
     },
@@ -242,27 +250,12 @@ window.editorBridge = {
                     if (update.docChanged) {
                         debouncedSave()
                         updateStats()
+                        updateUnsavedIndicator()
                     }
                     if (update.selectionSet) updateStats()
                     if (update.geometryChanged && scrollbar) scrollbar.update()
 
-                    /*
-                    if (update.viewportChanged || update.geometryChanged) {
-                        const view = update.view
-                        const head = view.state.selection.main.head
-                        let isVisible = false
-                        for (const { from, to } of view.visibleRanges) {
-                            if (head >= from && head <= to) { isVisible = true; break; }
-                        }
-                        if (!isVisible && view.visibleRanges.length > 0) {
-                            const fr = view.visibleRanges[0]
-                            const center = Math.floor((fr.from + fr.to) / 2)
-                            setTimeout(() => {
-                                view.dispatch({ selection: { anchor: center, head: center }, scrollIntoView: false })
-                            }, 50)
-                        }
-                    }
-                    */
+
                 })
             ]
         }))
@@ -293,11 +286,26 @@ function updateStats() {
     document.getElementById("st-info")!.textContent = `Line ${line.number}, Col ${col}`
 }
 
+function updateUnsavedIndicator() {
+    const indicator = document.getElementById("unsaved-indicator")!
+    const currentContent = editor.state.doc.toString()
+    const hasChanges = currentContent !== initialContent
+
+    // Show indicator if there are unsaved changes
+    indicator.style.display = hasChanges ? "block" : "none"
+}
+
 // --- Toolbar Logic ---
 document.getElementById("btn-undo")!.onclick = () => undo(editor)
 document.getElementById("btn-redo")!.onclick = () => redo(editor)
 document.getElementById("btn-save")!.onclick = () => {
-    if (window.Android) window.Android.save(editor.state.doc.toString())
+    if (window.Android) {
+        const content = editor.state.doc.toString()
+        window.Android.save(content)
+        // Update initial content and hide indicator after save
+        initialContent = content
+        updateUnsavedIndicator()
+    }
 }
 
 // --- Symbol Bar ---
@@ -364,9 +372,9 @@ function generateTOC() {
         }
 
         item.innerHTML = `
-            <div class="toc-item-title" style="pointer-events: none;">${chap.label}</div>
-            <div class="toc-item-meta" style="pointer-events: none;">${tocType === 'row' ? '第 ' + chap.line + ' 行' : '内容偏移: ' + chap.pos}</div>
-        `
+<div class="toc-item-title" style="pointer-events: none;">${chap.label}</div>
+<div class="toc-item-meta" style="pointer-events: none;">${tocType === 'row' ? '第 ' + chap.line + ' 行' : '内容偏移: ' + chap.pos}</div>
+`
 
         item.onclick = (e) => {
             e.preventDefault()

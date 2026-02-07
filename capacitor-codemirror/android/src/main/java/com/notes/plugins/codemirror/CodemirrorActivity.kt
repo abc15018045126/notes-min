@@ -81,7 +81,6 @@ class CodemirrorActivity : AppCompatActivity() {
                 options.put("path", filePath)
                 options.put("fontSize", intent.getIntExtra("fontSize", 16))
                 options.put("showLineNumbers", intent.getBooleanExtra("showLineNumbers", true))
-                options.put("autoSave", intent.getBooleanExtra("autoSave", true))
                 options.put("languageMode", intent.getStringExtra("language") ?: "Plain Text")
 
                 val script = """

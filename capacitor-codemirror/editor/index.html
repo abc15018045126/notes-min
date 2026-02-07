@@ -712,12 +712,15 @@
                         <path d="M4 6h16M4 12h16M4 18h16" />
                     </svg></button>
                 <div class="spacer"></div>
-                <button class="btn-icon" id="btn-save"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2">
+                <button class="btn-icon" id="btn-save" style="position: relative;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
                         <path d="M17 21v-8H7v8" />
                         <path d="M7 3v5h8" />
-                    </svg></button>
+                    </svg>
+                    <span id="unsaved-indicator"
+                        style="position: absolute; top: 4px; right: 4px; color: #ff4444; font-weight: bold; font-size: 18px; display: none;">*</span>
+                </button>
                 <button class="btn-icon" id="btn-undo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2">
                         <path d="M9 13l-4-4 4-4M5 9h11a4 4 0 010 8h-1" />
@@ -908,6 +911,27 @@
                     <div class="setting-desc">底部信息栏（行号位置、字数等）</div>
                 </div>
                 <input type="checkbox" id="status-bar-check" checked>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">键盘避让</div>
+                    <div class="setting-desc">键盘弹出时自动滚动内容</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="keyboard-avoid-check">
+                    <input type="number" id="keyboard-avoid-lines" min="0" max="100" value="2"
+                        style="width: 50px; text-align: center; border: 1px solid var(--border); border-radius: 4px; padding: 2px;">
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">行</span>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">自动保存</div>
+                    <div class="setting-desc">编辑时自动保存文件</div>
+                </div>
+                <input type="checkbox" id="auto-save-check" checked>
             </div>
 
             <div class="setting-item">

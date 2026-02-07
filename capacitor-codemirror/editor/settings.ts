@@ -42,6 +42,8 @@ export class SettingsManager {
     public showSymbolBar = true
     public languageMode = "Plain Text"
     public isAutoSave = true
+    public isKeyboardAvoidance = true
+    public keyboardAvoidanceLines = 2
 
     // Custom Theme Logic
     public customThemeStyle: any = {}
@@ -91,6 +93,7 @@ export class SettingsManager {
         const highlightLineCheck = document.getElementById("highlight-line-check") as HTMLInputElement
         const statusBarCheck = document.getElementById("status-bar-check") as HTMLInputElement
         const symbolBarCheck = document.getElementById("symbol-bar-check") as HTMLInputElement
+        const autoSaveCheck = document.getElementById("auto-save-check") as HTMLInputElement
         const languageSelect = document.getElementById("language-select") as HTMLSelectElement
 
         const lineSlider = document.getElementById("line-height-slider") as HTMLInputElement
@@ -166,6 +169,43 @@ export class SettingsManager {
             this.syncUIVisibility()
             this.updateJsonArea()
         })
+        autoSaveCheck.addEventListener("change", () => {
+            this.isAutoSave = autoSaveCheck.checked
+            this.updateJsonArea()
+        })
+
+        const keyboardAvoidCheck = document.getElementById("keyboard-avoid-check") as HTMLInputElement
+        const keyboardAvoidLines = document.getElementById("keyboard-avoid-lines") as HTMLInputElement
+
+        keyboardAvoidCheck.addEventListener("change", () => {
+            this.isKeyboardAvoidance = keyboardAvoidCheck.checked
+            this.updateJsonArea()
+        })
+        keyboardAvoidLines.addEventListener("change", () => {
+            this.keyboardAvoidanceLines = parseInt(keyboardAvoidLines.value)
+            this.updateJsonArea()
+        })
+
+        // Listen to visual viewport resize (keyboard open/close)
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", () => {
+                if (this.isKeyboardAvoidance && this.editor.hasFocus) {
+                    const view = this.editor
+                    // Calculate pixels to push
+                    const lineHeightPx = this.currentFontSize * this.lineHeight
+                    const pushPx = this.keyboardAvoidanceLines * lineHeightPx
+
+                    // Delay slightly to allow layout to settle
+                    setTimeout(() => {
+                        const head = view.state.selection.main.head
+                        view.dispatch({
+                            effects: EditorView.scrollIntoView(head, { y: "nearest", yMargin: pushPx }),
+                            userEvent: "scroll.jump"
+                        })
+                    }, 100)
+                }
+            })
+        }
 
         languageSelect.addEventListener("change", () => {
             this.setLanguage(languageSelect.value)
@@ -272,6 +312,18 @@ export class SettingsManager {
         }
         if (s.autoSave !== undefined) {
             this.isAutoSave = s.autoSave
+            const check = document.getElementById("auto-save-check") as HTMLInputElement
+            if (check) check.checked = s.autoSave
+        }
+        if (s.isKeyboardAvoidance !== undefined) {
+            this.isKeyboardAvoidance = s.isKeyboardAvoidance
+            const check = document.getElementById("keyboard-avoid-check") as HTMLInputElement
+            if (check) check.checked = s.isKeyboardAvoidance
+        }
+        if (s.keyboardAvoidanceLines !== undefined) {
+            this.keyboardAvoidanceLines = s.keyboardAvoidanceLines
+            const input = document.getElementById("keyboard-avoid-lines") as HTMLInputElement
+            if (input) input.value = s.keyboardAvoidanceLines.toString()
         }
 
         // Custom Theme Sync
@@ -563,6 +615,9 @@ export class SettingsManager {
             showHighlightLine: this.showHighlightLine,
             showStatusBar: this.showStatusBar,
             showSymbolBar: this.showSymbolBar,
+            autoSave: this.isAutoSave,
+            isKeyboardAvoidance: this.isKeyboardAvoidance,
+            keyboardAvoidanceLines: this.keyboardAvoidanceLines,
             languageMode: this.languageMode,
             customThemeStyle: this.customThemeStyle,
             editorBgColor: this.editorBgColor,
