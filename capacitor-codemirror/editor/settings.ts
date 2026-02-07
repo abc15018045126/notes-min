@@ -1,6 +1,15 @@
-import { EditorView, lineNumbers, highlightActiveLine } from "@codemirror/view"
+import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLineGutter } from "@codemirror/view"
 import { Compartment } from "@codemirror/state"
 import { foldGutter } from "@codemirror/language"
+
+declare global {
+    interface Window {
+        editorBridge: any,
+        Android: any
+    }
+}
+import { markdown } from "@codemirror/lang-markdown"
+import { languages } from "@codemirror/language-data"
 
 export class SettingsManager {
     private editor: EditorView
@@ -13,6 +22,8 @@ export class SettingsManager {
     // New CM compartments
     private lineNumbersConf: Compartment
     private highlightLineConf: Compartment
+    private customThemeConf: Compartment
+    private languageConf: Compartment
 
     public currentFontSize = 16
     public isWordWrap = true
@@ -29,6 +40,19 @@ export class SettingsManager {
     public showHighlightLine = true
     public showStatusBar = true
     public showSymbolBar = true
+    public languageMode = "Plain Text"
+    public isAutoSave = true
+
+    // Custom Theme Logic
+    public customThemeStyle: any = {}
+
+    // Theme Colors
+    public editorBgColor = "#0d1117"
+    public editorTextColor = "#c9d1d9"
+    public uiBgColor = "#0d1117"
+    public activeLineColor = "#21262d"
+    public scrollbarColor = "#9b9b9b"
+    public gutterTextColor = "#8b949e"
 
     constructor(
         editor: EditorView,
@@ -38,7 +62,9 @@ export class SettingsManager {
         themeConf: Compartment,
         oneDark: any,
         lineNumbersConf: Compartment,
-        highlightLineConf: Compartment
+        highlightLineConf: Compartment,
+        customThemeConf: Compartment,
+        languageConf: Compartment
     ) {
         this.editor = editor
         this.fontSizeConf = fontSizeConf
@@ -48,6 +74,8 @@ export class SettingsManager {
         this.oneDark = oneDark
         this.lineNumbersConf = lineNumbersConf
         this.highlightLineConf = highlightLineConf
+        this.customThemeConf = customThemeConf
+        this.languageConf = languageConf
         this.initListeners()
     }
 
@@ -63,13 +91,35 @@ export class SettingsManager {
         const highlightLineCheck = document.getElementById("highlight-line-check") as HTMLInputElement
         const statusBarCheck = document.getElementById("status-bar-check") as HTMLInputElement
         const symbolBarCheck = document.getElementById("symbol-bar-check") as HTMLInputElement
+        const languageSelect = document.getElementById("language-select") as HTMLSelectElement
 
         const lineSlider = document.getElementById("line-height-slider") as HTMLInputElement
         const wrapLineSlider = document.getElementById("wrap-line-height-slider") as HTMLInputElement
         const marginSlider = document.getElementById("margin-slider") as HTMLInputElement
         const jsonArea = document.getElementById("json-settings") as HTMLTextAreaElement
+        const themeJsonArea = document.getElementById("theme-json-settings") as HTMLTextAreaElement
+
+        // Populate Theme JSON on Init
+        if (themeJsonArea) {
+            themeJsonArea.value = JSON.stringify(this.customThemeStyle, null, 4)
+        }
 
         btnSettingsBack.onclick = () => {
+            // Lazy Update: Apply JSON changes only on Exit
+            try {
+                const data = JSON.parse(jsonArea.value)
+                this.updateFromData(data)
+            } catch (e) { /* ignore */ }
+
+            if (themeJsonArea) {
+                try {
+                    const style = JSON.parse(themeJsonArea.value)
+                    this.customThemeStyle = style
+                    this.applyCustomTheme()
+                } catch (e) { /* ignore */ }
+            }
+
+            // Sync final state to storage
             settingsPage.classList.remove("active")
             this.saveToStorage()
         }
@@ -81,12 +131,14 @@ export class SettingsManager {
                 effects: this.wordWrapConf.reconfigure(this.isWordWrap ? EditorView.lineWrapping : [])
             })
             this.syncWordWrapUI()
+            this.updateJsonArea()
         })
         foldCheck.addEventListener("change", () => {
             this.isFoldEnabled = foldCheck.checked
             this.editor.dispatch({
                 effects: this.foldConf.reconfigure(this.isFoldEnabled ? foldGutter() : [])
             })
+            this.updateJsonArea()
         })
 
         // New listeners
@@ -95,20 +147,29 @@ export class SettingsManager {
             this.editor.dispatch({
                 effects: this.lineNumbersConf.reconfigure(this.showLineNumbers ? lineNumbers() : [])
             })
+            this.updateJsonArea()
         })
         highlightLineCheck.addEventListener("change", () => {
             this.showHighlightLine = highlightLineCheck.checked
             this.editor.dispatch({
                 effects: this.highlightLineConf.reconfigure(this.showHighlightLine ? highlightActiveLine() : [])
             })
+            this.updateJsonArea()
         })
         statusBarCheck.addEventListener("change", () => {
             this.showStatusBar = statusBarCheck.checked
             this.syncUIVisibility()
+            this.updateJsonArea()
         })
         symbolBarCheck.addEventListener("change", () => {
             this.showSymbolBar = symbolBarCheck.checked
             this.syncUIVisibility()
+            this.updateJsonArea()
+        })
+
+        languageSelect.addEventListener("change", () => {
+            this.setLanguage(languageSelect.value)
+            this.updateJsonArea()
         })
 
         lineSlider.addEventListener("input", () => {
@@ -124,11 +185,29 @@ export class SettingsManager {
             this.applySpacing()
         })
 
-        jsonArea.addEventListener("input", () => {
-            try {
-                const data = JSON.parse(jsonArea.value)
-                this.updateFromData(data)
-            } catch (e) { /* ignore invalid json while typing */ }
+        this.applySpacing()
+
+
+
+        // Unified Color Strips Logic
+        const colorCircles = document.querySelectorAll(".color-circle")
+        colorCircles.forEach(circle => {
+            circle.addEventListener("click", (e) => {
+                const target = e.currentTarget as HTMLElement
+                const color = target.getAttribute("data-color")!
+                const parentId = target.parentElement!.getAttribute("data-id")!
+
+                if (parentId === "editor-bg-color") this.editorBgColor = color
+                else if (parentId === "editor-text-color") this.editorTextColor = color
+                else if (parentId === "ui-bg-color") this.uiBgColor = color
+                else if (parentId === "active-line-color") this.activeLineColor = color
+                else if (parentId === "scrollbar-color") this.scrollbarColor = color
+                else if (parentId === "gutter-text-color") this.gutterTextColor = color
+
+                this.syncColorPickers()
+                this.applyCustomTheme()
+                this.updateJsonArea()
+            })
         })
     }
 
@@ -140,7 +219,7 @@ export class SettingsManager {
         if (symbolBar) symbolBar.style.display = this.showSymbolBar ? "flex" : "none"
     }
 
-    private updateFromData(s: any) {
+    public updateFromData(s: any) {
         if (s.fontSize) this.setFontSize(s.fontSize)
         if (s.lineHeight) {
             this.lineHeight = s.lineHeight
@@ -188,6 +267,29 @@ export class SettingsManager {
             const check = document.getElementById("symbol-bar-check") as HTMLInputElement
             if (check) check.checked = s.showSymbolBar
         }
+        if (s.languageMode) {
+            this.setLanguage(s.languageMode)
+        }
+        if (s.autoSave !== undefined) {
+            this.isAutoSave = s.autoSave
+        }
+
+        // Custom Theme Sync
+        if (s.customThemeStyle) {
+            this.customThemeStyle = s.customThemeStyle
+            const tArea = document.getElementById("theme-json-settings") as HTMLTextAreaElement
+            if (tArea) tArea.value = JSON.stringify(this.customThemeStyle, null, 4)
+        }
+
+        if (s.editorBgColor) this.editorBgColor = s.editorBgColor
+        if (s.editorTextColor) this.editorTextColor = s.editorTextColor
+        if (s.uiBgColor) this.uiBgColor = s.uiBgColor
+        if (s.activeLineColor) this.activeLineColor = s.activeLineColor
+        if (s.scrollbarColor) this.scrollbarColor = s.scrollbarColor
+        if (s.gutterTextColor) this.gutterTextColor = s.gutterTextColor
+
+        this.syncColorPickers()
+        this.applyCustomTheme()
 
         this.syncUIVisibility()
         this.applySpacing()
@@ -208,6 +310,185 @@ export class SettingsManager {
         this.applySpacing()
     }
 
+    private syncColorPickers() {
+        const strips = document.querySelectorAll(".color-strip")
+        strips.forEach(strip => {
+            const id = strip.getAttribute("data-id")
+            let currentColor = ""
+            if (id === "editor-bg-color") currentColor = this.editorBgColor
+            else if (id === "editor-text-color") currentColor = this.editorTextColor
+            else if (id === "ui-bg-color") currentColor = this.uiBgColor
+            else if (id === "active-line-color") currentColor = this.activeLineColor
+            else if (id === "scrollbar-color") currentColor = this.scrollbarColor
+            else if (id === "gutter-text-color") currentColor = this.gutterTextColor
+
+            const circles = strip.querySelectorAll(".color-circle")
+            circles.forEach(circle => {
+                const circleColor = circle.getAttribute("data-color")!
+                circle.classList.toggle("active", circleColor.toUpperCase() === currentColor.toUpperCase())
+            })
+        })
+    }
+
+    public getCustomTheme() {
+        const isDark = !this.isColorLight(this.editorBgColor)
+        // Build the custom theme object for CodeMirror
+        const combinedTheme = {
+            ...this.customThemeStyle,
+            "&": {
+                backgroundColor: this.editorBgColor,
+                color: this.editorTextColor,
+                ...(this.customThemeStyle["&"] || {})
+            },
+            "&.cm-focused": {
+                outline: "none",
+                ...(this.customThemeStyle["&.cm-focused"] || {})
+            },
+            ".cm-scroller": {
+                backgroundColor: this.editorBgColor,
+                ...(this.customThemeStyle[".cm-scroller"] || {})
+            },
+            ".cm-content": {
+                color: this.editorTextColor,
+                caretColor: this.editorTextColor,
+                backgroundColor: this.editorBgColor, // Reinforce
+                ...(this.customThemeStyle[".cm-content"] || {})
+            },
+            ".cm-gutters": {
+                backgroundColor: this.editorBgColor,
+                color: this.gutterTextColor,
+                border: "none !important",
+                borderRight: "none !important",
+                boxShadow: "none !important",
+                ...(this.customThemeStyle[".cm-gutters"] || {})
+            },
+            ".cm-gutter": {
+                backgroundColor: this.editorBgColor,
+                borderRight: "none !important",
+                boxShadow: "none !important",
+                ...(this.customThemeStyle[".cm-gutter"] || {})
+            },
+            ".cm-lineNumbers .cm-gutterElement": {
+                backgroundColor: this.editorBgColor,
+                color: "inherit",
+                ...(this.customThemeStyle[".cm-lineNumbers .cm-gutterElement"] || {})
+            },
+            ".cm-gutterElement": {
+                backgroundColor: this.editorBgColor, // Lock background
+                ...(this.customThemeStyle[".cm-gutterElement"] || {})
+            },
+            ".cm-foldGutter": {
+                backgroundColor: "transparent",
+                color: this.gutterTextColor,
+                ...(this.customThemeStyle[".cm-foldGutter"] || {})
+            },
+            ".cm-foldGutter .cm-gutterElement": {
+                color: this.gutterTextColor + " !important",
+                ...(this.customThemeStyle[".cm-foldGutter .cm-gutterElement"] || {})
+            },
+            ".cm-activeLine": {
+                backgroundColor: this.activeLineColor,
+                ...(this.customThemeStyle[".cm-activeLine"] || {})
+            },
+            ".cm-activeLineGutter": {
+                backgroundColor: this.activeLineColor,
+                color: this.editorTextColor,
+                border: "none !important",
+                ...(this.customThemeStyle[".cm-activeLineGutter"] || {})
+            },
+            // Fix for potential dark separator line
+            ".cm-line": {
+                border: "none !important",
+                ...(this.customThemeStyle[".cm-line"] || {})
+            },
+            // Search & Panels
+            ".cm-panels": {
+                backgroundColor: this.editorBgColor,
+                color: this.editorTextColor,
+                borderTop: "1px solid var(--border)",
+                ...(this.customThemeStyle[".cm-panels"] || {})
+            },
+            ".cm-search": {
+                backgroundColor: this.editorBgColor,
+                color: this.editorTextColor,
+                ...(this.customThemeStyle[".cm-search"] || {})
+            },
+            ".cm-search input": {
+                backgroundColor: "rgba(0,0,0,0.1)",
+                color: "inherit",
+                border: "1px solid var(--border)",
+                borderRadius: "4px",
+                padding: "2px 6px",
+                outline: "none",
+                ...(this.customThemeStyle[".cm-search input"] || {})
+            },
+            ".cm-search button": {
+                backgroundColor: "rgba(0,0,0,0.05)",
+                color: "inherit",
+                border: "1px solid var(--border)",
+                borderRadius: "4px",
+                cursor: "pointer",
+                padding: "2px 8px",
+                ...(this.customThemeStyle[".cm-search button"] || {})
+            },
+            // Tooltips & Autocomplete
+            ".cm-tooltip": {
+                backgroundColor: this.editorBgColor,
+                color: this.editorTextColor,
+                border: "1px solid var(--border)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                ...(this.customThemeStyle[".cm-tooltip"] || {})
+            },
+            ".cm-tooltip-autocomplete": {
+                "& > ul > li[aria-selected]": {
+                    backgroundColor: "var(--primary)",
+                    color: "white"
+                }
+            }
+        }
+        return EditorView.theme(combinedTheme, { dark: isDark })
+    }
+
+    private applyCustomTheme() {
+        try {
+            // Update UI Colors via CSS Variables
+            document.documentElement.style.setProperty('--bg', this.uiBgColor)
+            document.documentElement.style.setProperty('--surface', this.uiBgColor) // Match exactly to remove gray
+            document.documentElement.style.setProperty('--editor-bg', this.editorBgColor)
+            document.documentElement.style.setProperty('--active-line-color', this.activeLineColor)
+            document.documentElement.style.setProperty('--thumb-color', this.scrollbarColor)
+
+            // System Level: Update Meta Theme Color for Navigation/Status bars
+            const meta = document.getElementById('meta-theme-color')
+            if (meta) meta.setAttribute('content', this.uiBgColor)
+
+            // Sync with Native Layer (Android) to prevent gray flashes during keyboard/resize
+            if (window.Android && typeof window.Android.setBackgroundColor === 'function') {
+                window.Android.setBackgroundColor(this.uiBgColor)
+            }
+
+            // Adjust border color slightly to be visible but not black on white
+            const isLightUI = this.isColorLight(this.uiBgColor)
+            document.documentElement.style.setProperty('--border', isLightUI ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)')
+            document.documentElement.style.setProperty('--accent', isLightUI ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)')
+            document.documentElement.style.setProperty('--text', isLightUI ? '#1a1a1a' : '#c9d1d9')
+            document.documentElement.style.setProperty('--text-dim', isLightUI ? '#666' : '#8b949e')
+
+            this.editor.dispatch({
+                effects: this.customThemeConf.reconfigure(this.getCustomTheme())
+            })
+            this.updateJsonArea()
+        } catch (e) { console.error("Invalid Theme JSON", e) }
+    }
+
+    private isColorLight(color: string) {
+        const hex = color.replace('#', '')
+        const r = parseInt(hex.substr(0, 2), 16)
+        const g = parseInt(hex.substr(2, 2), 16)
+        const b = parseInt(hex.substr(4, 2), 16)
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000
+        return brightness > 155
+    }
     private applySpacing() {
         const fontVal = document.getElementById("font-val")!
         const lineVal = document.getElementById("line-height-val")!
@@ -281,12 +562,35 @@ export class SettingsManager {
             showLineNumbers: this.showLineNumbers,
             showHighlightLine: this.showHighlightLine,
             showStatusBar: this.showStatusBar,
-            showSymbolBar: this.showSymbolBar
+            showSymbolBar: this.showSymbolBar,
+            languageMode: this.languageMode,
+            customThemeStyle: this.customThemeStyle,
+            editorBgColor: this.editorBgColor,
+            editorTextColor: this.editorTextColor,
+            uiBgColor: this.uiBgColor,
+            activeLineColor: this.activeLineColor,
+            scrollbarColor: this.scrollbarColor,
+            gutterTextColor: this.gutterTextColor
         }
     }
 
     private saveToStorage() {
         const data = this.getSettingsData()
         localStorage.setItem("editor_settings", JSON.stringify(data))
+    }
+
+    public setLanguage(mode: string) {
+        this.languageMode = mode
+        const select = document.getElementById("language-select") as HTMLSelectElement
+        if (select) select.value = mode
+
+        let extension: any[] = []
+        if (mode === "Markdown") {
+            extension = [markdown({ codeLanguages: languages })]
+        }
+
+        this.editor.dispatch({
+            effects: this.languageConf.reconfigure(extension)
+        })
     }
 }

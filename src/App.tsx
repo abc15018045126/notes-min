@@ -198,7 +198,10 @@ const App: React.FC = () => {
             await Codemirror.start({
                 path: `${basePath}/${id}`,
                 title: t.newNote,
-                theme: theme
+                theme: theme,
+                fontSize: fontSize,
+                showLineNumbers: showLineNums,
+                autoSave: autoSave
             });
             reloadNotes();
         } catch (e) {
@@ -502,7 +505,10 @@ const App: React.FC = () => {
                                                 await Codemirror.start({
                                                     path: fullPath,
                                                     title: n.title,
-                                                    theme: theme
+                                                    theme: theme,
+                                                    fontSize: fontSize,
+                                                    showLineNumbers: showLineNums,
+                                                    autoSave: autoSave
                                                 });
                                                 reloadNotes(); // Reload after editor closed
                                             } catch (e) {

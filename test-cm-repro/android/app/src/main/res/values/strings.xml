@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">test-cm-repro</string>
+    <string name="title_activity_main">test-cm-repro</string>
+    <string name="package_name">com.example.repro</string>
+    <string name="custom_url_scheme">com.example.repro</string>
+</resources>

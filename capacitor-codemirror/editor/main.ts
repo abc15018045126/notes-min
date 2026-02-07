@@ -4,14 +4,15 @@ import { defaultKeymap, history, historyKeymap, undo, redo } from "@codemirror/c
 import { searchKeymap, highlightSelectionMatches, openSearchPanel } from "@codemirror/search"
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "@codemirror/autocomplete"
 import { lintKeymap } from "@codemirror/lint"
-import { markdown } from "@codemirror/lang-markdown"
+
 import { oneDark } from "@codemirror/theme-one-dark"
-import { languages } from "@codemirror/language-data"
 import { foldGutter } from "@codemirror/language"
+import { markdown } from "@codemirror/lang-markdown"
+import { languages } from "@codemirror/language-data"
 import { SettingsManager } from "./settings"
 import { ZoomManager } from "./zoom"
 import { ScrollbarManager } from "./scrollbar"
-import { ScrollSyncManager } from "./scroll-sync"
+import { emptyLineFix } from "./empty-line-fix"
 
 // --- Configuration Compartments ---
 const fontSizeConf = new Compartment()
@@ -20,6 +21,8 @@ const themeConf = new Compartment()
 const foldConf = new Compartment()
 const lineNumbersConf = new Compartment()
 const highlightLineConf = new Compartment()
+const customThemeConf = new Compartment()
+const languageConf = new Compartment()
 
 // --- UI Elements ---
 const vScrollbar = document.getElementById("virtual-scrollbar")!
@@ -31,14 +34,14 @@ const basicSetup = [
     highlightActiveLineGutter(),
     highlightSpecialChars(),
     history(),
-    drawSelection(),
-    dropCursor(),
+    // drawSelection(),
+    // dropCursor(),
     closeBrackets(),
     autocompletion(),
-    rectangularSelection(),
-    crosshairCursor(),
-    highlightLineConf.of(highlightActiveLine()),
-    highlightSelectionMatches(),
+    // rectangularSelection(),
+    // crosshairCursor(),
+    // highlightLineConf.of(highlightActiveLine()),
+    // highlightSelectionMatches(),
     keymap.of([
         ...closeBracketsKeymap,
         ...defaultKeymap,
@@ -46,7 +49,8 @@ const basicSetup = [
         ...historyKeymap,
         ...lintKeymap,
         ...completionKeymap
-    ])
+    ]),
+    emptyLineFix()
 ]
 
 // --- Editor Initialization ---
@@ -58,10 +62,10 @@ const editor = new EditorView({
         doc: "",
         extensions: [
             basicSetup,
-            markdown({ codeLanguages: languages }),
-
             // Dynamic Configurations
+            languageConf.of([]), // Default to Plain Text
             themeConf.of(oneDark),
+            customThemeConf.of([]),
             fontSizeConf.of(EditorView.theme({
                 ".cm-content": { fontSize: "16px" },
                 ".cm-gutters": { fontSize: "16px" }
@@ -75,8 +79,7 @@ const editor = new EditorView({
                 ".cm-scroller": {
                     fontFamily: "'JetBrains Mono', monospace",
                     overflow: "auto",
-                    "overflow-x": "auto",
-                    "touch-action": "pan-x pan-y"
+                    "overflow-x": "auto"
                 },
                 ".cm-content": {
                     "box-sizing": "border-box"
@@ -96,10 +99,55 @@ const editor = new EditorView({
                 if (update.geometryChanged && scrollbar) {
                     scrollbar.update()
                 }
+
+                /* [Android Fix] - Temporarily disabled as it interferes with manual selection
+                if (update.viewportChanged || update.geometryChanged) {
+                    const view = update.view
+                    const head = view.state.selection.main.head
+
+                    let isVisible = false
+                    for (const { from, to } of view.visibleRanges) {
+                        if (head >= from && head <= to) {
+                            isVisible = true
+                            break
+                        }
+                    }
+
+                    if (!isVisible && view.visibleRanges.length > 0) {
+                        const firstRange = view.visibleRanges[0]
+                        const center = Math.floor((firstRange.from + firstRange.to) / 2)
+
+                        setTimeout(() => {
+                            view.dispatch({
+                                selection: { anchor: center, head: center },
+                                scrollIntoView: false
+                            })
+                        }, 50)
+                    }
+                }
+                */
             })
         ]
     })
 })
+
+// [Android Fix] Selection monitoring to adjust UI priorities
+document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection()
+    const hasSelection = sel && sel.toString().length > 0
+    if (hasSelection) {
+        document.body.classList.add('app-selecting')
+    } else {
+        document.body.classList.remove('app-selecting')
+    }
+})
+
+// [Android Fix] Ensure focus on first touch to stabilize long-press selection
+editor.contentDOM.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1 && !editor.hasFocus) {
+        editor.focus()
+    }
+}, { passive: true })
 
 // --- Initialize Managers ---
 const settings = new SettingsManager(
@@ -110,16 +158,25 @@ const settings = new SettingsManager(
     themeConf,
     oneDark,
     lineNumbersConf,
-    highlightLineConf
+    highlightLineConf,
+    customThemeConf,
+    languageConf
 )
 settings.loadSettings()
 new ZoomManager(editor, settings)
-new ZoomManager(editor, settings)
 const scrollbar = new ScrollbarManager(editor, settings)
-new ScrollSyncManager(editor)
+
+// --- File State ---
+let initialContent = ""
+let fileMetadata = { name: "file.txt", path: "/" }
 
 // --- Bridge Implementation ---
 window.editorBridge = {
+    onRenamed: (newName: string, newPath: string) => {
+        fileMetadata.name = newName
+        fileMetadata.path = newPath
+        document.getElementById("st-filename")!.textContent = newName
+    },
     save: () => {
         if (window.Android) window.Android.save(editor.state.doc.toString())
     },
@@ -132,19 +189,95 @@ window.editorBridge = {
     setContent: (content: string, optionsJson: string = "{}") => {
         const options = JSON.parse(optionsJson)
 
-        editor.dispatch({
-            changes: { from: 0, to: editor.state.doc.length, insert: content }
-        })
+        // Save initial state for Revert
+        initialContent = content
+
+        // Update Metadata
+        if (options.filename) fileMetadata.name = options.filename
+        if (options.path) fileMetadata.path = options.path
+
+        // Update UI
+        document.getElementById("st-filename")!.textContent = fileMetadata.name
+
+        // Reset state completely to clear history
+        editor.setState(EditorState.create({
+            doc: content,
+            extensions: [
+                basicSetup,
+                // Re-apply dynamic configurations
+                languageConf.of(settings.languageMode === "Markdown" ?
+                    [markdown({ codeLanguages: languages })] : []),
+                themeConf.of(settings.isDarkTheme ? oneDark : []),
+                customThemeConf.of(settings.getCustomTheme()),
+                fontSizeConf.of(EditorView.theme({
+                    ".cm-content": {
+                        lineHeight: settings.lineHeight,
+                        fontSize: settings.currentFontSize + "px"
+                    },
+                    ".cm-gutters": {
+                        fontSize: settings.currentFontSize + "px"
+                    },
+                    ".cm-line": {
+                        paddingLeft: settings.sideMargin + "px",
+                        paddingRight: settings.sideMargin + "px"
+                    },
+                    ".cm-lineWrapping .cm-line": { lineHeight: settings.wrapLineHeight }
+                })),
+                wordWrapConf.of(settings.isWordWrap ? EditorView.lineWrapping : []),
+                foldConf.of(settings.isFoldEnabled ? foldGutter() : []),
+
+                // Re-apply Base Theme
+                EditorView.theme({
+                    "&": { height: "100%" },
+                    ".cm-scroller": {
+                        fontFamily: "'JetBrains Mono', monospace",
+                        overflow: "auto",
+                        "overflow-x": "auto"
+                    },
+                    ".cm-content": { "box-sizing": "border-box" }
+                }),
+
+                // Re-apply Listener
+                EditorView.updateListener.of((update) => {
+                    if (update.docChanged) {
+                        debouncedSave()
+                        updateStats()
+                    }
+                    if (update.selectionSet) updateStats()
+                    if (update.geometryChanged && scrollbar) scrollbar.update()
+
+                    /*
+                    if (update.viewportChanged || update.geometryChanged) {
+                        const view = update.view
+                        const head = view.state.selection.main.head
+                        let isVisible = false
+                        for (const { from, to } of view.visibleRanges) {
+                            if (head >= from && head <= to) { isVisible = true; break; }
+                        }
+                        if (!isVisible && view.visibleRanges.length > 0) {
+                            const fr = view.visibleRanges[0]
+                            const center = Math.floor((fr.from + fr.to) / 2)
+                            setTimeout(() => {
+                                view.dispatch({ selection: { anchor: center, head: center }, scrollIntoView: false })
+                            }, 50)
+                        }
+                    }
+                    */
+                })
+            ]
+        }))
 
         if (options.theme) {
             settings.setTheme(options.theme !== 'light')
         }
+        settings.updateFromData(options)
     }
 }
 
 // --- Utilities ---
 let saveTimeout: any
 function debouncedSave() {
+    if (!settings.isAutoSave) return
     if (saveTimeout) clearTimeout(saveTimeout)
     saveTimeout = setTimeout(() => {
         if (window.Android) window.Android.save(editor.state.doc.toString())
@@ -240,10 +373,14 @@ function generateTOC() {
             e.stopPropagation()
             item.style.backgroundColor = "#3b82f6"
             item.style.color = "#ffffff"
+
+            // Instant Jump Logic
             editor.dispatch({
                 selection: { anchor: chap.pos, head: chap.pos },
-                scrollIntoView: true
+                effects: EditorView.scrollIntoView(chap.pos, { y: 'center' }),
+                userEvent: 'select'
             })
+
             setTimeout(() => {
                 tocPage.classList.remove("active")
                 editor.focus()
@@ -299,7 +436,51 @@ document.getElementById("mi-search")!.onclick = () => {
     openSearchPanel(editor)
 }
 
+document.getElementById("mi-rename")!.onclick = () => {
+    hideOverlay()
+    const newName = prompt("请输入新的文件名:", fileMetadata.name)
+    if (newName && newName !== fileMetadata.name) {
+        if (window.Android && window.Android.rename) {
+            window.Android.rename(newName)
+        }
+    }
+}
+
 document.getElementById("mi-settings")!.onclick = () => {
     hideOverlay()
     settingsPage.classList.add("active")
+}
+
+// --- File Info & Revert Logic ---
+const infoModal = document.getElementById("file-info-modal")!
+const btnInfoClose = document.getElementById("btn-info-close")!
+
+document.getElementById("mi-info")!.onclick = () => {
+    hideOverlay()
+
+    // Populate Data
+    document.getElementById("info-filename")!.textContent = fileMetadata.name
+    document.getElementById("info-path")!.textContent = fileMetadata.path
+    document.getElementById("info-lines")!.textContent = editor.state.doc.lines.toString()
+    document.getElementById("info-chars")!.textContent = editor.state.doc.length.toString()
+
+    // Show Modal
+    showOverlay(false) // Show overlay but no menu
+    infoModal.classList.remove("hidden")
+}
+
+btnInfoClose.onclick = () => {
+    hideOverlay()
+    infoModal.classList.add("hidden")
+}
+
+document.getElementById("mi-revert")!.onclick = () => {
+    hideOverlay()
+    if (confirm("确定要重置文件到初始状态吗？所有未保存的修改将丢失。")) {
+        window.editorBridge.setContent(initialContent, JSON.stringify({
+            theme: settings.isDarkTheme ? 'dark' : 'light',
+            filename: fileMetadata.name,
+            path: fileMetadata.path
+        }))
+    }
 }

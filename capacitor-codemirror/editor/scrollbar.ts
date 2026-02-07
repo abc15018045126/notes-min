@@ -79,7 +79,7 @@ export class ScrollbarManager {
             if (this.isDraggingV) {
                 const deltaY = e.touches[0].clientY - this.startY
 
-                const thumbHeight = Math.max((clientHeight / (scrollHeight || 1)) * clientHeight, 40)
+                const thumbHeight = 60 // Fixed thumb height
                 const availableThumbSpace = clientHeight - thumbHeight
                 const availableScrollSpace = scrollHeight - clientHeight
 
@@ -91,32 +91,14 @@ export class ScrollbarManager {
                     const ratio = el.scrollTop / (availableScrollSpace || 1)
                     this.vThumb.style.transform = `translateY(${ratio * availableThumbSpace}px)`
 
-                    // [CRITICAL FIX] Continuous Cursor Sync
-                    // ONLY run this when keyboard is open (viewport is squeezed).
-                    // In read-only mode (full screen), we rely on native behavior.
-                    const isKeyboardOpen = window.visualViewport && window.visualViewport.height < window.screen.height * 0.75
-
-                    if (isKeyboardOpen) {
-                        const view = this.editor
-                        const rect = el.getBoundingClientRect()
-                        const centerX = rect.left + rect.width / 2
-                        const centerY = rect.top + rect.height / 2
-
-                        const pos = view.posAtCoords({ x: centerX, y: centerY }, false)
-                        if (pos !== null) {
-                            view.dispatch({
-                                selection: { anchor: pos, head: pos },
-                                scrollIntoView: false
-                            })
-                        }
-                    }
+                    // [CRITICAL FIX] Removed selection sync to prevent selection wiping during drag
                 }
             }
 
             if (this.isDraggingH) {
                 const deltaX = e.touches[0].clientX - this.startX
 
-                const thumbWidth = Math.max((clientWidth / (scrollWidth || 1)) * clientWidth, 40)
+                const thumbWidth = 60 // Fixed thumb width
                 const availableThumbSpace = clientWidth - thumbWidth
                 const availableScrollSpace = scrollWidth - clientWidth
 
@@ -134,26 +116,6 @@ export class ScrollbarManager {
             if (this.isDraggingV || this.isDraggingH) {
                 this.isDraggingV = false
                 this.isDraggingH = false
-
-                // Industrial Focus Guard (Final Sync)
-                const isKeyboardOpen = window.visualViewport && window.visualViewport.height < window.screen.height * 0.75
-
-                if (isKeyboardOpen) {
-                    // Use robust SCREEN coordinates to find center
-                    const view = this.editor
-                    const rect = view.scrollDOM.getBoundingClientRect()
-                    const centerX = rect.left + rect.width / 2
-                    const centerY = rect.top + rect.height / 2
-
-                    const pos = view.posAtCoords({ x: centerX, y: centerY }, false)
-
-                    if (pos !== null) {
-                        view.dispatch({
-                            selection: { anchor: pos, head: pos },
-                            scrollIntoView: false
-                        })
-                    }
-                }
 
                 this.editor.requestMeasure()
                 this.hideLater()
@@ -188,8 +150,7 @@ export class ScrollbarManager {
             if (scrollHeight <= clientHeight + 1) {
                 this.vScrollbar.classList.remove("visible")
             } else {
-                const ratio = clientHeight / scrollHeight
-                const thumbHeight = Math.max(ratio * clientHeight, 40)
+                const thumbHeight = 60 // Fixed thumb height
                 const availableSpace = clientHeight - thumbHeight
                 const scrollRatio = scrollTop / (scrollHeight - clientHeight || 1)
 
@@ -203,8 +164,7 @@ export class ScrollbarManager {
             if (this.settings.isWordWrap || scrollWidth <= clientWidth + 1) {
                 this.hScrollbar.classList.remove("visible")
             } else {
-                const ratio = clientWidth / scrollWidth
-                const thumbWidth = Math.max(ratio * clientWidth, 40)
+                const thumbWidth = 60 // Fixed thumb width
                 const availableSpace = clientWidth - thumbWidth
                 const scrollRatio = scrollLeft / (scrollWidth - clientWidth || 1)
 

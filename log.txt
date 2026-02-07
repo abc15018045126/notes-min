@@ -1,0 +1,311 @@
+02-06 16:10:34.303 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.303 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.319 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.336 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.337 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.355 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.373 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.390 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.405 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.423 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.439 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.456 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.473 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.489 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.506 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.520 17000 17172 V ActivityThread: updateVmProcessStateForGc sceneId =0 state=196608
+02-06 16:10:34.520 17000 17172 I 018045126.notes: Close vivo delay for GC JIT .
+02-06 16:10:34.588 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:34.616 29272 29272 W ThreadPoolForeg: type=1400 audit(0.0:45145): avc: denied { write } for name="traced_producer" dev="tmpfs" ino=13104 scontext=u:r:gmscore_app:s0:c512,c768 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0 app=com.google.android.gms
+02-06 16:10:35.091 17000 17782 V ActivityThread: updateVmProcessStateForGc sceneId =0 state=196864
+02-06 16:10:35.091 17000 17782 I 018045126.notes: Open vivo delay for GC JIT .
+02-06 16:10:35.157 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.173 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.190 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.206 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.224 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.239 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.256 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.305 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:35.357 17000 17782 V ActivityThread: updateVmProcessStateForGc sceneId =0 state=196608
+02-06 16:10:35.357 17000 17782 I 018045126.notes: Close vivo delay for GC JIT .
+02-06 16:10:35.964 17000 17000 D ImeFocusController: onViewFocusChanged, view=android.webkit.WebView{27260b2 VFEDHVC.. .F...... 0,0-1080,2190}, mServedView=DecorView@3015c8f[CodemirrorActivity]
+02-06 16:10:35.969 17000 17000 V ImeFocusController: checkFocus: view=DecorView@3015c8f[CodemirrorActivity] next=android.webkit.WebView{27260b2 VFEDHVC.. .F...... 0,0-1080,2190} immDelegate=delegate{e0b50e5 displayId=0} force=false package=com.abc15018045126.notes
+02-06 16:10:35.975 13664 13664 E sug_noti: osi
+02-06 16:10:35.976 13664 13664 E sug_noti: !r_!G_c_!i: true_true_true_true
+02-06 16:10:35.977 13664 13664 E sug_noti: !KM: false
+02-06 16:10:35.981 13664 13664 E sug_info: loadPref sugFlag : true
+02-06 16:10:35.984 13664 13664 E sug_info: SR : true
+02-06 16:10:35.984 13664 13664 E sug_info: TS : false
+02-06 16:10:35.985 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:35.986 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:35.987 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:35.988 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:35.998 13664 13664 E sug_noti: osi
+02-06 16:10:36.003 13664 13664 E sug_noti: !r_!G_c_!i: false_true_true_true
+02-06 16:10:36.008 13664 13664 E sug_info: loadPref sugFlag : true
+02-06 16:10:36.012 13664 13664 E sug_info: SR : true
+02-06 16:10:36.013 13664 13664 E sug_info: TS : false
+02-06 16:10:36.013 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.014 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.015 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.015 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:36.034 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.034 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.035 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.045 13664 13664 E testImeOption: com.abc15018045126.notes:option:301989889_time:1770365436044
+02-06 16:10:36.050 13664 14147 D [OCR_CORE] bds_ocr_client.cpp [clear_points]:75: clear_points
+02-06 16:10:36.057 13664 14147 D [OCR_CORE] bds_ocr_client.cpp [clear_points]:75: clear_points
+02-06 16:10:36.059 13664 13664 E sug_info: SR : true
+02-06 16:10:36.059 13664 13664 E sug_info: TS : false
+02-06 16:10:36.059 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.059 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.060 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.060 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:36.077 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:36.079 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:36.079 13664 13664 E sug_info: SR : true
+02-06 16:10:36.079 13664 13664 E sug_info: TS : false
+02-06 16:10:36.079 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.080 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.080 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.080 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:36.089 13664 13664 E setCandidatesViewShown: ImeService-changeCandState-true
+02-06 16:10:36.089 13664 13664 E setCandidatesViewShown: ImeService-changeCandState-SDK_INT>=32-if
+02-06 16:10:36.090 13664 13664 E sug_info: SR : true
+02-06 16:10:36.090 13664 13664 E sug_info: TS : false
+02-06 16:10:36.091 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.091 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.091 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.091 13664 13664 E sug_info: SR : true
+02-06 16:10:36.091 13664 13664 E sug_info: TS : false
+02-06 16:10:36.091 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.092 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.092 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.099 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.114 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:36.115 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:36.120 13664 13664 E sug_info: SR : true
+02-06 16:10:36.120 13664 13664 E sug_info: TS : false
+02-06 16:10:36.120 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.121 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.121 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.121 13664 13664 E sug_info: SR : true
+02-06 16:10:36.121 13664 13664 E sug_info: TS : false
+02-06 16:10:36.121 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.122 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.122 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.142 17000 17000 W OnBackInvokedCallback: OnBackInvokedCallback is not enabled for the application.
+02-06 16:10:36.142 17000 17000 W OnBackInvokedCallback: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+02-06 16:10:36.175 13664 13664 D BufferQueueConsumer: [](id:35600000032f,api:0,p:-1,c:13664) connect: controlledByApp=false 
+02-06 16:10:36.222 13664 14109 D BLASTBufferQueue: [VRI[InputMethod]#815](f:0,a:1) acquireNextBufferLocked size=1080x2316 mFrameNumber=1 applyTransaction=true mTimestamp=124976480919448(auto) mPendingTransactions.size=0 graphicBufferId=58686433137435 transform=0
+02-06 16:10:36.229 17000 17000 D InsetsController: show(ime(), fromIme=true)
+02-06 16:10:36.246 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.246 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.246 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.246 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.246 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.247 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.247 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.247 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.247 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.247 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.252 13664 13664 E sug_info: SR : true
+02-06 16:10:36.252 13664 13664 E sug_info: TS : false
+02-06 16:10:36.252 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.252 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.252 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.253 13664 13664 E sug_info: SR : true
+02-06 16:10:36.253 13664 13664 E sug_info: TS : false
+02-06 16:10:36.253 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:36.253 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:36.253 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:36.276 13664 13664 D BufferQueueConsumer: [](id:356000000330,api:0,p:-1,c:13664) connect: controlledByApp=false 
+02-06 16:10:36.280 13664 14109 D BLASTBufferQueue: [VRI[PopupWindow:3623c06]#816](f:0,a:1) acquireNextBufferLocked size=1080x912 mFrameNumber=1 applyTransaction=true mTimestamp=124976539136140(auto) mPendingTransactions.size=0 graphicBufferId=58686433137441 transform=0
+02-06 16:10:36.281 13664 14109 W Parcel  : Expecting binder but got null!
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.310 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.311 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.311 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.320 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:36.320 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.297 13664 13664 E sug_info: SR : true
+02-06 16:10:37.297 13664 13664 E sug_info: TS : false
+02-06 16:10:37.297 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:37.297 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:37.297 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:37.297 13664 13664 E sug_info: SR : true
+02-06 16:10:37.298 13664 13664 E sug_info: TS : false
+02-06 16:10:37.298 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:37.298 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:37.298 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:37.316 13664 13664 E AbsSoftView: removeCallbacks
+02-06 16:10:37.316 13664 13664 E sug_info: SR : true
+02-06 16:10:37.316 13664 13664 E sug_info: TS : false
+02-06 16:10:37.316 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:37.316 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:37.316 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:37.316 13664 13664 E sug_info: SR : true
+02-06 16:10:37.316 13664 13664 E sug_info: TS : false
+02-06 16:10:37.316 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:37.316 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:37.317 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:37.317 13664 13664 E sug_info: SR : true
+02-06 16:10:37.317 13664 13664 E sug_info: TS : false
+02-06 16:10:37.317 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:37.317 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:37.317 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:37.317 13664 13664 E setCandidatesViewShown: ImeService-hideSoft-if-false
+02-06 16:10:37.323 13664 13664 D BLASTBufferQueue: [VRI[PopupWindow:3623c06]#816](f:0,a:2) destructor()
+02-06 16:10:37.323 13664 13664 D BufferQueueConsumer: [VRI[PopupWindow:3623c06]#816(BLAST Consumer)816](id:356000000330,api:0,p:-1,c:13664) disconnect
+02-06 16:10:37.356 13664 14036 W SQLiteLog: (28) double-quoted string literal: "18"
+02-06 16:10:37.361 13664 14036 W SQLiteLog: (28) double-quoted string literal: "18"
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.366 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.381 13664 14147 D [OCR_CORE] bds_ocr_client.cpp [clear_points]:75: clear_points
+02-06 16:10:37.382 20203 20335 I GoLog   : from 127.0.0.1:59171 accepted udp:8.8.8.8:53 [dns-in -> dns-out]
+02-06 16:10:37.383 13664 13664 E Voice-Turbonet: start to enable turbonet
+02-06 16:10:37.383 13664 13664 E Voice-Turbonet: start to enable turbonet, turbonet is not support, stop
+02-06 16:10:37.397 13664 13664 W InputEventReceiver: Attempted to finish an input event but the input event receiver has already been disposed.
+02-06 16:10:37.413 13664 17796 D TrafficStats: tagSocket(210) with statsTag=0xffffffff, statsUid=-1
+02-06 16:10:37.414 13664 17796 D Linux   : [Posix_connect Debug]Process com.baidu.input :443
+02-06 16:10:37.425 20203 20332 I GoLog   : from tcp:127.0.0.1:51654 accepted tcp:111.45.11.10:443 [socks -> direct]
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:37.426 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.108 13664 13664 D BLASTBufferQueue: [VRI[InputMethod]#815](f:0,a:4) destructor()
+02-06 16:10:38.108 13664 13664 D BufferQueueConsumer: [VRI[InputMethod]#815(BLAST Consumer)815](id:35600000032f,api:0,p:-1,c:13664) disconnect
+02-06 16:10:38.352 13664 13664 E testImeOption: com.abc15018045126.notes:option:301989889_time:1770365438352
+02-06 16:10:38.353 13664 14147 D [OCR_CORE] bds_ocr_client.cpp [clear_points]:75: clear_points
+02-06 16:10:38.353 13664 14147 D [OCR_CORE] bds_ocr_client.cpp [clear_points]:75: clear_points
+02-06 16:10:38.354 13664 13664 E sug_info: SR : true
+02-06 16:10:38.354 13664 13664 E sug_info: TS : false
+02-06 16:10:38.354 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.354 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.354 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.354 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:38.356 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:38.356 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:38.356 13664 13664 E sug_info: SR : true
+02-06 16:10:38.356 13664 13664 E sug_info: TS : false
+02-06 16:10:38.356 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.356 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.356 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.356 13664 13664 E sug_info: sug core setting: false
+02-06 16:10:38.358 13664 13664 E setCandidatesViewShown: ImeService-changeCandState-true
+02-06 16:10:38.359 13664 13664 E setCandidatesViewShown: ImeService-changeCandState-SDK_INT>=32-if
+02-06 16:10:38.359 13664 13664 E sug_info: SR : true
+02-06 16:10:38.359 13664 13664 E sug_info: TS : false
+02-06 16:10:38.359 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.359 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.359 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.359 13664 13664 E sug_info: SR : true
+02-06 16:10:38.359 13664 13664 E sug_info: TS : false
+02-06 16:10:38.359 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.359 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.360 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.362 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.365 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:38.365 13664 13664 E CandHandler: fontSizeInfo:57_57_57_0.7
+02-06 16:10:38.367 13664 13664 E sug_info: SR : true
+02-06 16:10:38.367 13664 13664 E sug_info: TS : false
+02-06 16:10:38.367 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.367 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.368 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.368 13664 13664 E sug_info: SR : true
+02-06 16:10:38.368 13664 13664 E sug_info: TS : false
+02-06 16:10:38.368 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.368 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.368 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.379 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.379 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.391 13664 13664 D BufferQueueConsumer: [](id:356000000331,api:0,p:-1,c:13664) connect: controlledByApp=false 
+02-06 16:10:38.416 17000 17000 W OnBackInvokedCallback: OnBackInvokedCallback is not enabled for the application.
+02-06 16:10:38.416 17000 17000 W OnBackInvokedCallback: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+02-06 16:10:38.429 17000 17000 D BufferQueueConsumer: [](id:426800000012,api:0,p:-1,c:17000) connect: controlledByApp=false 
+02-06 16:10:38.437 17000 17026 D BLASTBufferQueue: [VRI[PopupWindow:cde0729]#18](f:0,a:1) acquireNextBufferLocked size=90x90 mFrameNumber=1 applyTransaction=true mTimestamp=124978695907448(auto) mPendingTransactions.size=0 graphicBufferId=73014444032108 transform=0
+02-06 16:10:38.437 17000 17026 W Parcel  : Expecting binder but got null!
+02-06 16:10:38.453 13664 14109 D BLASTBufferQueue: [VRI[InputMethod]#817](f:0,a:1) acquireNextBufferLocked size=1080x2316 mFrameNumber=1 applyTransaction=true mTimestamp=124978711719756(auto) mPendingTransactions.size=0 graphicBufferId=58686433137452 transform=0
+02-06 16:10:38.473 17000 17000 D InsetsController: show(ime(), fromIme=true)
+02-06 16:10:38.479 13664 13664 E sug_info: SR : true
+02-06 16:10:38.479 13664 13664 E sug_info: TS : false
+02-06 16:10:38.479 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.480 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.480 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.480 13664 13664 E sug_info: SR : true
+02-06 16:10:38.480 13664 13664 E sug_info: TS : false
+02-06 16:10:38.480 13664 13664 E sug_info: FLAG_SUG_SWITCH: true_xG: 4_FLAG_SUG_MIN_NET_LEVEL: 0
+02-06 16:10:38.480 13664 13664 E sug_info: checkMatch:com.abc15018045126.notes_301989889_131233_null
+02-06 16:10:38.480 13664 13664 E sug_info: true_true_true_true_false_true_false_true
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.480 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.524 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.535 13664 13664 D BufferQueueConsumer: [](id:356000000332,api:0,p:-1,c:13664) connect: controlledByApp=false 
+02-06 16:10:38.544 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.544 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.544 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.544 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb
+02-06 16:10:38.545 13664 14109 D BLASTBufferQueue: [VRI[PopupWindow:7ca5d9f]#818](f:0,a:1) acquireNextBufferLocked size=1080x912 mFrameNumber=1 applyTransaction=true mTimestamp=124978803711756(auto) mPendingTransactions.size=0 graphicBufferId=58686433137453 transform=0
+02-06 16:10:38.546 13664 14109 W Parcel  : Expecting binder but got null!
+02-06 16:10:40.044 17000 17026 E GPUAUX  : [AUX]GuiExtAuxCheckAuxPath:663: Null anb

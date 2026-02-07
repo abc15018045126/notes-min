@@ -6,6 +6,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Sora-Style CodeMirror</title>
+    <meta id="meta-theme-color" name="theme-color" content="#0d1117">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -57,6 +58,8 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
+            background: var(--bg);
+            /* Ensure container has background */
         }
 
         header {
@@ -142,6 +145,8 @@
             flex: 1;
             position: relative;
             overflow: hidden;
+            background: var(--editor-bg, var(--bg));
+            /* Lock background */
         }
 
         #editor {
@@ -184,21 +189,30 @@
             /* Align to edge */
             width: 6px;
             /* High-end thin look */
-            background-color: rgba(155, 155, 155, 0.5);
+            background-color: var(--thumb-color, rgba(155, 155, 155, 0.5));
             border-radius: 3px;
             pointer-events: auto;
             touch-action: none;
         }
 
-        /* The "Ghost Hitbox" - Industrial Standard */
         .scrollbar-thumb::after {
             content: '';
             position: absolute;
             top: -10px;
             bottom: -10px;
-            left: -20px;
+            left: -10px;
             right: -4px;
             background: transparent;
+            transition: left 0.2s;
+        }
+
+        /* Selection-Aware Scrollbar: Shrink hitbox when selecting to let handles pass */
+        body.app-selecting .scrollbar-thumb::after {
+            left: 0;
+        }
+
+        body.app-selecting .scrollbar-thumb {
+            opacity: 0.3;
         }
 
         .scrollbar-thumb:active {
@@ -242,11 +256,91 @@
             background: transparent;
         }
 
+        /* --- FINAL GUTTER & UI FIX --- */
+        .cm-gutters,
+        .cm-panels,
+        .cm-search,
+        .cm-tooltip {
+            background-color: var(--editor-bg) !important;
+            color: var(--text) !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .cm-search input {
+            background: rgba(128, 128, 128, 0.1) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .cm-gutter,
+        .cm-gutterElement {
+            background-color: transparent !important;
+            border: none !important;
+        }
+
+        .cm-activeLineGutter {
+            background-color: var(--active-line-color) !important;
+            color: var(--text) !important;
+            border: none !important;
+        }
+
+        .cm-activeLine {
+            pointer-events: none !important;
+        }
+
+        /* --- Color Strips --- */
+        .color-strip {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            width: 100%;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .color-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-circle:active {
+            transform: scale(0.9);
+        }
+
+        .color-circle.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+        }
+
+        [data-theme='dark'] .color-circle {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item,
+
+        [data-theme='dark'] .preset-btn {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item,
+        .toc-item,
+        .settings-content,
+        .toc-content {
+            border-bottom: 1px solid var(--border) !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
         /* Hide native scrollbar but keep functionality */
         .cm-scroller {
             overflow: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            touch-action: pan-x pan-y !important;
+            background-color: var(--editor-bg) !important;
         }
 
         .cm-scroller[data-word-wrap="true"] {
@@ -316,15 +410,24 @@
             position: fixed;
             inset: 0;
             background: var(--bg);
-            z-index: 300;
+            z-index: 100;
+            /* Lower than header (100) and TOC (1000) */
             display: flex;
             flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1);
+            transform: translateX(105%);
+            /* Move further out */
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1), visibility 0s 0.3s;
+            color: var(--text);
+            visibility: hidden;
+            border: none !important;
         }
 
         .settings-page.active {
             transform: translateX(0);
+            visibility: visible;
+            z-index: 2000;
+            /* Pop to top when active */
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1), visibility 0s;
         }
 
         /* TOC Page (Left Drawer) */
@@ -333,24 +436,31 @@
             top: 0;
             bottom: 0;
             left: 0;
-            background: #1e1e1e;
-            /* Hardcoded dark bg for stability */
-            z-index: 1000;
-            /* Super high z-index */
+            background: var(--bg);
+            z-index: 1;
+            /* Drop to bottom when hidden */
             display: flex;
             flex-direction: column;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1);
-            border-right: 1px solid #333;
+            transform: translateX(-105%);
+            /* Move further out */
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1), visibility 0s 0.3s;
+            border-right: none !important;
+            /* No border by default */
             width: 85%;
             max-width: 320px;
-            box-shadow: 10px 0 50px rgba(0, 0, 0, 0.8);
             pointer-events: auto !important;
-            /* Force click enabled */
+            visibility: hidden;
+            box-shadow: none !important;
         }
 
         .toc-page.active {
             transform: translateX(0);
+            visibility: visible;
+            z-index: 3000;
+            /* Highest priority when active */
+            border-right: 1px solid var(--border) !important;
+            transition: transform 0.3s cubic-bezier(0.2, 0.0, 0.2, 1), visibility 0s;
+            box-shadow: 10px 0 50px rgba(0, 0, 0, 0.3) !important;
         }
 
         .toc-content {
@@ -362,46 +472,56 @@
         }
 
         .toc-content::-webkit-scrollbar {
-            width: 8px;
-            /* Thicker for better touch dragging */
+            width: 30px;
+            /* Super large touch target */
         }
 
         .toc-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            background-clip: content-box;
+            background-color: rgba(155, 155, 155, 0.5);
+            border: 12px solid transparent;
+            /* 30px width - 24px border = 6px visual width */
+            border-radius: 20px;
+            min-height: 80px;
+            /* NEVER shrink below this size */
         }
 
-        .toc-tabs {
+        .toc-content::-webkit-scrollbar-thumb:active {
+            background-color: rgba(155, 155, 155, 0.8);
+        }
+
+        /* TOC Toggle Group (In Header) */
+        .toc-toggle-grp {
             display: flex;
-            padding: 8px;
-            gap: 8px;
-            border-bottom: 1px solid #333;
-        }
-
-        .toc-tab {
-            flex: 1;
-            padding: 8px;
+            background: var(--accent);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            text-align: center;
+            padding: 2px;
+            margin-right: 8px;
         }
 
-        .toc-tab.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
+        .toc-toggle {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .toc-toggle.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .toc-item {
             padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Explicit white border */
+            border: 1px solid var(--border);
             border-radius: 8px;
             margin: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--surface);
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -437,6 +557,8 @@
             justify-content: space-between;
             padding: 16px;
             border-bottom: 1px solid var(--border);
+            background: transparent !important;
+            /* Total removal of item background */
         }
 
         .setting-text .setting-title {
@@ -499,8 +621,84 @@
             resize: none;
         }
 
+        .setting-select {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 8px;
+            height: 32px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .color-picker {
+            width: 44px;
+            height: 32px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .color-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 5px;
+        }
+
         .hidden {
             display: none !important;
+        }
+
+        /* Modal Card Styles */
+        .modal-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 320px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            z-index: 210;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: var(--text-dim);
+        }
+
+        .info-val {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary:active {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -557,18 +755,18 @@
         <div class="toc-page" id="toc-page">
             <header>
                 <div class="header-actions">
-                    <span style="font-weight: 600; font-size: 1.1rem; margin-left: 12px;">逻辑目录</span>
+                    <span style="font-weight: 600; font-size: 1.1rem; margin-left: 12px;">目录</span>
                     <div class="spacer"></div>
+                    <div class="toc-toggle-grp">
+                        <div class="toc-toggle active" id="tab-toc-row">按行数</div>
+                        <div class="toc-toggle" id="tab-toc-char">按字符</div>
+                    </div>
                     <button class="btn-icon" id="btn-toc-close"><svg width="24" height="24" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 6L6 18M6 6l12 12" />
                         </svg></button>
                 </div>
             </header>
-            <div class="toc-tabs">
-                <div class="toc-tab active" id="tab-toc-row">按行数</div>
-                <div class="toc-tab" id="tab-toc-char">按字符</div>
-            </div>
             <div class="toc-content" id="toc-content">
                 <!-- Items injected by JS -->
             </div>
@@ -592,6 +790,28 @@
                 </svg>
                 <span>搜索</span>
             </div>
+            <div class="menu-item" id="mi-rename">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span>重命名</span>
+            </div>
+            <div class="menu-item" id="mi-info">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>文件属性</span>
+            </div>
+            <div class="menu-item" id="mi-revert">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                </svg>
+                <span>重置文件</span>
+            </div>
             <div class="menu-item" id="mi-settings">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
@@ -599,6 +819,29 @@
                 </svg>
                 <span>设置</span>
             </div>
+        </div>
+
+        <!-- File Info Modal -->
+        <div class="modal-card hidden" id="file-info-modal">
+            <h3 style="margin: 0 0 16px 0; font-size: 1.1rem;">文件属性</h3>
+            <div class="info-row">
+                <span class="info-label">文件名</span>
+                <span class="info-val" id="info-filename">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">位置</span>
+                <span class="info-val" id="info-path" style="font-size: 0.8rem; word-break: break-all;">-</span>
+            </div>
+            <div style="height: 1px; background: var(--border); margin: 12px 0;"></div>
+            <div class="info-row">
+                <span class="info-label">行数</span>
+                <span class="info-val" id="info-lines">0</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">字符数</span>
+                <span class="info-val" id="info-chars">0</span>
+            </div>
+            <button class="btn-primary" id="btn-info-close" style="margin-top: 16px; width: 100%;">关闭</button>
         </div>
     </div>
 
@@ -623,6 +866,17 @@
                     <input type="range" id="font-slider" min="8" max="32" value="16">
                     <span id="font-val" style="min-width: 32px; text-align: right">16px</span>
                 </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <div class="setting-title">语言模式</div>
+                    <div class="setting-desc">选择语法高亮语言</div>
+                </div>
+                <select id="language-select" class="setting-select">
+                    <option value="Plain Text">Plain Text</option>
+                    <option value="Markdown">Markdown</option>
+                </select>
             </div>
             <div class="setting-item">
                 <div class="setting-text">
@@ -703,6 +957,99 @@
                     <input type="range" id="margin-slider" min="0" max="100" step="4" value="16">
                     <span id="margin-val" style="min-width: 32px; text-align: right">16px</span>
                 </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">编辑器背景</div>
+                    <div class="setting-desc">设置代码编辑区的背景颜色</div>
+                </div>
+                <div class="color-strip" data-id="editor-bg-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">编辑器文字颜色</div>
+                    <div class="setting-desc">设置主文本颜色</div>
+                </div>
+                <div class="color-strip" data-id="editor-text-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">UI 背景颜色</div>
+                    <div class="setting-desc">应用界面（标题栏、面板等）的底色</div>
+                </div>
+                <div class="color-strip" data-id="ui-bg-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">当前行高亮颜色</div>
+                    <div class="setting-desc">光标所在行的背景颜色</div>
+                </div>
+                <div class="color-strip" data-id="active-line-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">滚动条颜色</div>
+                    <div class="setting-desc">侧边滚动条滑块的颜色</div>
+                </div>
+                <div class="color-strip" data-id="scrollbar-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">行号颜色</div>
+                    <div class="setting-desc">行号文字及折叠箭头的颜色</div>
+                </div>
+                <div class="color-strip" data-id="gutter-text-color">
+                    <div class="color-circle" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
+                    <div class="color-circle" style="background-color: #F8F1E7;" data-color="#F8F1E7"></div>
+                    <div class="color-circle" style="background-color: #E1EAD2;" data-color="#E1EAD2"></div>
+                    <div class="color-circle" style="background-color: #D1D7DA;" data-color="#D1D7DA"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="#000000"></div>
+                </div>
+            </div>
+
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+                <div class="setting-text">
+                    <div class="setting-title">自定义主题样式 (CSS-in-JS)</div>
+                    <div class="setting-desc">输入 CodeMirror theme JSON 对象</div>
+                </div>
+                <textarea class="json-textarea" id="theme-json-settings"
+                    placeholder='{ "&": { "backgroundColor": "#1e1e1e" }, ".cm-content": { "caretColor": "#0e9" } }'></textarea>
             </div>
 
             <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
